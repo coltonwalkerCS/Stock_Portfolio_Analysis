@@ -2,8 +2,9 @@
 This is the portfolio object, it contains:
 the name of each stock, its weight, etc.
 """
-
+from GatherHistoricalData import getAssetVolatility, getPurchaseInfo, createCorrelationMatrix
 # TODO: Implement helper functions: getPrice(atDate),
+
 
 class TransactionHistory:
     # TODO: Make list, or different D.S. that contains history of transactions
@@ -52,17 +53,33 @@ class PortAsset:
 
 
 class Portfolio:
-    correlation_matrix = [] # TODO: Implement function that reads in port_id_ticker_data and gens the corr matrix
+    correlation_matrix = []  # TODO: Implement function that reads in port_id_ticker_data and gens the corr matrix
+    asset_collection = {}
 
-    def __init__(self, portfolio_id_ticker, assets_historical_data, portfolio_id_weights):
+    def __init__(self, portfolio_id_ticker, assets_historical_data, portfolio_id_weights, start_date, intitial_captial):
         self.portfolio_id_ticker = portfolio_id_ticker  # ID/Ticker list: [(ID, TICKER),...]
         self.assets_historical_data = assets_historical_data  # Hist Data dict: Key=asset_id, Item=pandas_df-hist_data
         self.portfolio_id_weights = portfolio_id_weights  # ID/Weights dict: Key=ID, Item=Weight | SUM(port_id_wght) = 1
-        # for id_tick in id_ticker_list:
+        self.initial_capital = intitial_captial  # Starting amount of $ for investment portfolio
+        self.start_date = start_date  # Start date of portfolio Y-M-D
 
-    def impl_port_assets_structure(self):
+        self.impl_port_assets_structure(assets_historical_data, portfolio_id_weights)
+
+        self.correlation_matrix = createCorrelationMatrix(assets_historical_data, portfolio_id_ticker)
+
+    def impl_port_assets_structure(self, assets_db, weights):
+        """Initialize the individual assets within the portfolio"""
         for asset in self.portfolio_id_ticker:
-            # TODO: Vol, purchase_price, quantity_shares, purchase_date need to be implemented
-            # TODO: Quantity_shares can be calc by port_value * asset weight
-            new_asset = PortAsset(asset[0], asset[1], self.portfolio_id_weights[asset[0]], 0.15, 100, 50, "Feb 12, 2023")
+            # Get the volume of a ticker given its historical data
+            ticker_vol = getAssetVolatility(assets_db[asset[0]]["Close"].tolist())
 
+            # Get the purchase price and number of shares for the asset
+            purchase_price, num_shares = getPurchaseInfo(assets_db, asset[0], weights[asset[0]],
+                                                         self.initial_capital, self.start_date)
+
+            # Create the asset object
+            new_asset = PortAsset(asset[0], asset[1], self.portfolio_id_weights[asset[0]],
+                                  ticker_vol, purchase_price, num_shares, self.start_date)
+
+            # Add asset to portfolio collection
+            self.asset_collection[asset[0]] = new_asset

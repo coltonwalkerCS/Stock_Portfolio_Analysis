@@ -1,16 +1,21 @@
-from GatherHistoricalData import importAssetData, importAssetDataSingle
-# Test importing df into dictionary
+from GatherHistoricalData import importAssetData, importAssetDataSingle, createCorrelationMatrix
+import numpy as np
 
 """ SIMPLE Asset_ID's, can be more complex in a more complex system"""
-# weights = [0.15, 0.15, 0.1, 0.1, 0.12, 0.13, .06, .07, 0.07, 0.05]
-portfolio_id_ticker_list = [('1', "AAPL"), ('2', "MSFT"), ('3', "EEM"), ('4', "IEF"),  ('5', "LQD"),  ('6', "VNQ"), ('7', "GLD"),
-                       ('8', "HYG"),  ('9', "TIP"),  ('10', "MUB")]
+weights = {'1': 0.15, '2': 0.15, '3': 0.1, '4': 0.1,  '5': 0.12,
+           '6': 0.13, '7': 0.06, '8': 0.07,  '9': 0.07,  '10': 0.05}
+
+portfolio_id_ticker_list = [('1', "AAPL"), ('2', "MSFT"), ('3', "EEM"), ('4', "IEF"),  ('5', "LQD"),
+                            ('6', "VNQ"), ('7', "GLD"), ('8', "HYG"),  ('9', "TIP"),  ('10', "MUB")]
 
 historical_asset_data_db = importAssetData(portfolio_id_ticker_list, "1y", interval="1wk")
+# Sample start date
+start_date = '2023-09-11 00:00:00-04:00'
 
-# for key in test_db:
-#     print("Key: ")
-#     print(test_db[key].head())
+corrMatrix = createCorrelationMatrix(historical_asset_data_db, portfolio_id_ticker_list)
+# print(historical_asset_data_db["1"].tail())
+# print(historical_asset_data_db["1"].loc['2022-09-12 00:00:00-04:00']['Open'])
+
 
 
 """
