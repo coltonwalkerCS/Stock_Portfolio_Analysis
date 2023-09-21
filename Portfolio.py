@@ -53,7 +53,7 @@ class PortAsset:
 
 
 class Portfolio:
-    correlation_matrix = []  # TODO: Implement function that reads in port_id_ticker_data and gens the corr matrix
+    correlation_matrix = []
     asset_collection = {}
 
     def __init__(self, portfolio_id_ticker, assets_historical_data, portfolio_id_weights, start_date, intitial_captial):
@@ -63,7 +63,7 @@ class Portfolio:
         self.initial_capital = intitial_captial  # Starting amount of $ for investment portfolio
         self.start_date = start_date  # Start date of portfolio Y-M-D
 
-        self.impl_port_assets_structure(assets_historical_data, portfolio_id_weights)
+        self.impl_port_assets_structure(assets_historical_data, portfolio_id_weights)  # Gen each portfolio asset obj
 
         self.correlation_matrix = createCorrelationMatrix(assets_historical_data, portfolio_id_ticker)
 
@@ -83,3 +83,4 @@ class Portfolio:
 
             # Add asset to portfolio collection
             self.asset_collection[asset[0]] = new_asset
+        
